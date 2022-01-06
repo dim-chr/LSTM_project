@@ -1,9 +1,7 @@
 import os
 import matplotlib.pyplot as plt
-from numpy.lib.npyio import load
 import pandas as pd
 import numpy as np
-from keras.models import load_model
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import LSTM
@@ -12,14 +10,15 @@ from keras.layers import *
 from sklearn.preprocessing import MinMaxScaler
 
 curr_dir = os.path.abspath(__file__)
-csv_path = "..\..\dir\TSLA.csv"
+csv_path = "..\..\dir\\nasd_input.csv"
 model_path = "..\..\Forecast_model.h5"
 
-df = pd.read_csv(os.path.join(curr_dir, csv_path))
+df = pd.read_csv(os.path.join(curr_dir, csv_path), header=None, delimiter='\t')
+df = df.drop(df.columns[0], axis=1)
+df = df.transpose()
 print("Number of rows and columns:", df.shape)
 
-#model = load_model(os.path.join(curr_dir, model_path))
-training_set = df.iloc[:800, [1]].values  # Training set: first 800 rows
+training_set = df.iloc[:600, [1]].values  # Training set: first 800 rows
 
 sc = MinMaxScaler(feature_range = (0, 1))
 training_set_scaled = sc.fit_transform(training_set)
@@ -27,7 +26,7 @@ training_set_scaled = sc.fit_transform(training_set)
 # Creating a data structure with 60 time-steps and 1 output
 X_train = []
 y_train = []
-for i in range(60, 800):
+for i in range(60, 600):
     X_train.append(training_set_scaled[i-60:i, 0])
     y_train.append(training_set_scaled[i, 0])
 X_train, y_train = np.array(X_train), np.array(y_train)
@@ -60,19 +59,16 @@ model.compile(optimizer = 'adam', loss = 'mean_squared_error')
 # Fitting the RNN to the Training set
 model.fit(X_train, y_train, epochs = 100, batch_size = 32)
 
-#if os.path.isfile(os.path.join(curr_dir, model_path)) is False:
-    #model.save(os.path.join(curr_dir, model_path))
-
 # Getting the predicted stock price of 2017
-dataset_train = df.iloc[:800, 1:2]
-dataset_test = df.iloc[800:, 1:2]
+dataset_train = df.iloc[:600, 1:2]
+dataset_test = df.iloc[600:, 1:2]
 dataset_total = pd.concat((dataset_train, dataset_test), axis = 0)
 
 inputs = dataset_total[len(dataset_total) - len(dataset_test) - 60:].values
 inputs = inputs.reshape(-1,1)
 inputs = sc.transform(inputs)
 X_test = []
-for i in range(60, 519):
+for i in range(60, 130):
     X_test.append(inputs[i-60:i, 0])
 X_test = np.array(X_test)
 X_test = np.reshape(X_test, (X_test.shape[0], X_test.shape[1], 1))
