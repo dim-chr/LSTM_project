@@ -24,14 +24,14 @@ from sklearn.preprocessing import MinMaxScaler
 #     elif(sys.argv[i] == "-n"):
 #         num = int(sys.argv[i+1])
 
-num = 50
-curr_dir = os.path.abspath(__file__)
-csv_path = "../../../dir/nasd_input.csv"
-#csv_path = "../../../dir/nasdaq2007_17.csv"
-model_path = "../../Forecast_model.h5"
-testpath = "/home/theo/Desktop/LSTM_project/dir/nasd_input.csv"
+num = 2  #! Only for google colab
+# model_path = "../../Forecast_model.h5"
+# model_path = "/content/models/Forecast_model.h5"  ! Only for google colab
 
-df = pd.read_csv(os.path.join(curr_dir, csv_path), header=None, delimiter='\t')
+# csv_path = os.path.join(os.path.abspath(__file__), "../../../dir/nasdaq2007_17.csv")
+csv_path = "/content/nasdaq2007_17.csv"  #! Only for google colab
+
+df = pd.read_csv(csv_path, header=None, delimiter='\t')
 file_ids = df.iloc[:, [0]].values
 df = df.drop(df.columns[0], axis=1)
 df = df.transpose()
@@ -84,11 +84,11 @@ model.add(Dense(units = 1))
 model.compile(optimizer = 'adam', loss = 'mean_squared_error')
 
 # Fitting the RNN to the Training set
-model.fit(X_train, y_train, epochs = 60, batch_size = 512, validation_split=0.1)
+model.fit(X_train, y_train, epochs = 60, batch_size = 1024, validation_split=0.1)
 
 # Getting the predicted stock price of 2017
-dataset_train = df.iloc[:train_size, 1:2]
-dataset_test = df.iloc[train_size:, 1:2]
+dataset_train = df.iloc[:train_size, [15]]
+dataset_test = df.iloc[train_size:, [15]]
 dataset_total = pd.concat((dataset_train, dataset_test), axis = 0)
 
 inputs = dataset_total[len(dataset_total) - len(dataset_test) - 60:].values
@@ -108,12 +108,14 @@ print(len(predicted_stock_price))
 predicted_stock_price = sc.inverse_transform(predicted_stock_price)
 
 # Visualising the results
-plt.plot(dataset_test.values, color = 'red', label = 'Real TESLA Stock Price')
-plt.plot(predicted_stock_price, color = 'blue', label = 'Predicted TESLA Stock Price')
+plt.plot(dataset_test.values, color = 'red', label = 'Real values')
+plt.plot(predicted_stock_price, color = 'blue', label = 'Predicted values')
 # plt.xticks(np.arange(0,459,50))
-plt.title('TESLA Stock Price Prediction')
+plt.title('Time Series Prediction')
 plt.xlabel('Time')
-plt.ylabel('TESLA Stock Price')
+plt.ylabel('Value')
 plt.legend()
-plt.savefig('graph.png')
+fig = plt.gcf()
+fig.set_size_inches(18.5, 10.5)
+plt.savefig('/content/graph.png')
 plt.show()

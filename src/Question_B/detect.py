@@ -1,6 +1,9 @@
 import os
+import tensorflow as tf
 import matplotlib.pyplot as plt
 import pandas as pd
+from pandas.plotting import register_matplotlib_converters
+from matplotlib import rcParams
 import numpy as np
 from keras.models import Sequential
 from keras.layers import Dense
@@ -10,16 +13,25 @@ from keras.layers import RepeatVector
 from keras.layers import TimeDistributed
 from sklearn.preprocessing import StandardScaler
 
+# %matplotlib inline
+# %config InlineBackend.figure_format='retina'
+
+register_matplotlib_converters()
+sns.set(style='whitegrid', palette='muted', font_scale=1.5)
+
+rcParams['figure.figsize'] = 22, 10
+
+RANDOM_SEED = 42
+
+np.random.seed(RANDOM_SEED)
+tf.random.set_seed(RANDOM_SEED)
+
+# csv_path = os.path.join(os.path.abspath(__file__), "../../../dir/nasdaq2007_17.csv")
+csv_path = "/content/spx.csv"  #! Only for google colab
+
+df = pd.read_csv(csv_path, parse_dates=['date'], index_col='date')
+
 TIME_STEPS = 30
-THRESHOLD = 0.65
-
-curr_dir = os.path.abspath(__file__)
-csv_path = "../../../dir/spx.csv"
-model_path = "../../Forecast_model.h5"
-testpath = "/home/theo/Desktop/LSTM_project/dir/nasd_input.csv"
-
-df = pd.read_csv(os.path.join(curr_dir, csv_path))
-df = df.drop(df.columns[0], axis=1)
 
 # Training data: 95%
 train_size = int(len(df) * 0.95)
@@ -65,11 +77,23 @@ model.compile(loss='mae', optimizer='adam')
 
 history = model.fit(X_train, y_train, epochs=10, batch_size=32, validation_split=0.1, shuffle=False)
 
+plt.plot(history.history['loss'], label='train')
+plt.plot(history.history['val_loss'], label='test')
+plt.legend();
+
+import seaborn as sns
+
 X_train_pred = model.predict(X_train)
 train_mae_loss = np.mean(np.abs(X_train_pred - X_train), axis=1)
 
+# sns.distplot(train_mae_loss, bins=50, kde=True)
+
 X_test_pred = model.predict(X_test)
-test_mae_loss = np.mean(np.abs(X_test_pred - X_test), axis=1)
+test_mae_loss = np.mean(np.abs(X_test_pred, X_test), axis=1)
+
+# sns.distplot(test_mae_loss, bins=50, kde=True)
+
+THRESHOLD = 2.35
 
 # DataFrame containing the loss and the anomalies (values above the threshold)
 test_score_df = pd.DataFrame(index=test[TIME_STEPS:].index)
@@ -78,4 +102,24 @@ test_score_df['threshold'] = THRESHOLD
 test_score_df['anomaly'] = test_score_df.loss > test_score_df.threshold
 test_score_df['close'] = test[TIME_STEPS:].close
 
+plt.plot(test_score_df.index, test_score_df.loss, label='loss')
+plt.plot(test_score_df.index, test_score_df.threshold, label='threshold')
+plt.xticks(rotation=25)
+plt.legend()
+
 anomalies = test_score_df[test_score_df.anomaly == True]
+
+plt.plot( 
+    test[TIME_STEPS:].index, 
+    test[TIME_STEPS:].close, 
+    label='close price')
+
+sns.scatterplot(
+    anomalies.index, 
+    anomalies.close, 
+    color=sns.color_palette()[3], 
+    s=52, 
+    label='anomaly')
+
+plt.xticks(rotation=25)
+plt.legend()
