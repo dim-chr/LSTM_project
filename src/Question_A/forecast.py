@@ -9,17 +9,16 @@ from keras.layers import Dropout
 from keras.layers import *
 from sklearn.preprocessing import MinMaxScaler
 
+num = 3
 curr_dir = os.path.abspath(__file__)
-csv_path = "../../dir/nasd_input.csv"
+csv_path = "../../../dir/nasd_input.csv"
 model_path = "../../Forecast_model.h5"
 testpath = "/home/theo/Desktop/LSTM_project/dir/nasd_input.csv"
 
 #1. append all -> train -> save image
 #2. loop each time serie -> then train each time serie -> save result of time serie
 
-# os.path.join(curr_dir, csv_path)
-
-df = pd.read_csv(testpath, header=None, delimiter='\t')
+df = pd.read_csv(os.path.join(curr_dir, csv_path), header=None, delimiter='\t')
 df = df.drop(df.columns[0], axis=1)
 df = df.transpose()
 print("Number of rows and columns:", df.shape)
