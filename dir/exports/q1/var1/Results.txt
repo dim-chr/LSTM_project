@@ -1,0 +1,38 @@
+Ερώτημα Α:
+Training ανά σύνολο χρονοσειρών:
+
+- 100 time series
+  Training set = 80% of each time series
+  Test set = 20% of each time series
+  4 LSTM layers (50 units)
+  4 Dropout layers (dropout rate=0.2)
+  1 Dense output layer
+  epochs = 60
+  batch size = 2048
+  Time steps (lookback) = 60
+  Training loss: 0.000574
+  Validation loss: 0.000167
+
+- 100 time series
+  Training set = 80% of each time series
+  Test set = 20% of each time series
+  4 LSTM layers (50 units)
+  4 Dropout layers (dropout rate=0.2)
+  1 Dense output layer
+  epochs = 60
+  batch size = 4096
+  Time steps (lookback) = 60
+  Training loss: 0.000655
+  Validation loss: 0.000208
+
+- 100 time series
+  Training set = 80% of each time series
+  Test set = 20% of each time series
+  4 LSTM layers (50 units)
+  4 Dropout layers (dropout rate=0.2)
+  1 Dense output layer
+  epochs = 60
+  batch size = 8192
+  Time steps (lookback) = 60
+  Training loss: 0.0010
+  Validation loss: 0.000298

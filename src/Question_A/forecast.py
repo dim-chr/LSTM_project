@@ -5,6 +5,8 @@ from numpy.core.multiarray import empty
 import pandas as pd
 import numpy as np
 import sys
+from keras.models import load_model
+from keras.backend import clear_session
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import LSTM
@@ -25,9 +27,7 @@ from sklearn.preprocessing import MinMaxScaler
 #     elif(sys.argv[i] == "-n"):
 #         num = int(sys.argv[i+1])
 
-num = 2  #! Only for google colab
-# model_path = "../../Forecast_model.h5"
-# model_path = "/content/models/Forecast_model.h5"  ! Only for google colab
+num_time_series = 2  #! Only for google colab
 
 # csv_path = os.path.join(os.path.abspath(__file__), "../../../dir/nasdaq2007_17.csv")
 csv_path = "/content/nasdaq2007_17.csv"  #! Only for google colab
@@ -46,7 +46,7 @@ print("Train size: ", train_size)
 sc = MinMaxScaler(feature_range = (0, 1))
 
 # Creating a data structure with 60 time-steps and 1 output
-for step in range (0, num):
+for step in range (0, num_time_series):
     X_train = []
     y_train = []
     
@@ -59,33 +59,6 @@ for step in range (0, num):
 
     X_train, y_train = np.array(X_train), np.array(y_train)
     X_train = np.reshape(X_train, (X_train.shape[0], X_train.shape[1], 1))
-    # Shape of X_train: (540, 60, 1)
-
-    model = Sequential()
-    #Adding the first LSTM layer and some Dropout regularisation
-    model.add(LSTM(units = 50, return_sequences = True, input_shape = (X_train.shape[1], X_train.shape[2])))
-    model.add(Dropout(0.2))
-
-    # Adding a second LSTM layer and some Dropout regularisation
-    model.add(LSTM(units = 50, return_sequences = True))
-    model.add(Dropout(0.2))
-
-    # Adding a third LSTM layer and some Dropout regularisation
-    model.add(LSTM(units = 50, return_sequences = True))
-    model.add(Dropout(0.2))
-
-    # Adding a fourth LSTM layer and some Dropout regularisation
-    model.add(LSTM(units = 50))
-    model.add(Dropout(0.2))
-
-    # Adding the output layer
-    model.add(Dense(units = 1))
-
-    # Compiling the RNN
-    model.compile(optimizer = 'adam', loss = 'mean_squared_error')
-
-    # Fitting the RNN to the Training set
-    model.fit(X_train, y_train, epochs = 60, batch_size = 128, validation_split=0.1)
 
     # Getting the predicted stock price of 2017
     dataset_train = df.iloc[:train_size, [step]]
@@ -101,11 +74,11 @@ for step in range (0, num):
 
     X_test = np.array(X_test)
     X_test = np.reshape(X_test, (X_test.shape[0], X_test.shape[1], 1))
-    print(X_test.shape)
-    # (459, 60, 1)
+
+    # Load model
+    model = load_model("/content/models/Forecast_model"+ str(step) +".h5")
 
     predicted_stock_price = model.predict(X_test)
-    print(len(predicted_stock_price))
     predicted_stock_price = sc.inverse_transform(predicted_stock_price)
 
     # Visualising the results
@@ -119,4 +92,7 @@ for step in range (0, num):
     fig = plt.gcf()
     fig.set_size_inches(18.5, 10.5)
     plt.savefig('/content/graph'+ str(step) +'.png')
-    plt.show()
+    plt.clf()
+
+    del model
+    clear_session()
