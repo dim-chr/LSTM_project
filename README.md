@@ -1,5 +1,12 @@
 # Machine Learning using Tensorflow.
 
+### Team and Repository Info
+
+Δημήτρης Χριστοφής 1115201800214 <br />
+Κωνσταντίνος Θεοφίλης 1115201600287 <br />
+<br />
+Project Repository: https://github.com/kostantinostheo/LSTM_project
+
 ### Project Structure and Info:
 
 - You can find the python code for each Question inside the  `src/` directory.
