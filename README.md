@@ -1,13 +1,12 @@
-# LSTM_project
-Time-Series Forecasting: Predicting Stock Prices Using An LSTM Model
+# Machine Learning using Tensorflow.
 
 ### Project Structure and Info:
 
 - You can find the python code for each Question inside the  `src/` directory.
 - Inside the `dir/` directory you can find the dataset .csv file (input file).
-- Inside `dir/exports/` you will find: 
-  - a report.pdf file, analyzing the results for all trained models.
-  - the exported plots for each question.
+- Inside `dir/exports/` you will:
+  - find a report.pdf file, analyzing the results for all trained models.
+  - export the plots for each question.
 
 ### How to train your model:
 
@@ -22,13 +21,16 @@ Question C:
 
 ### How to execute:
 
-or can execute with a default model by using the command:<br />
-Question A: `$python forecast.py –d nasdaq2007_17.csv -n 10`<br />
+Question A: `$python forecast.py –d nasdaq2007_17.csv -n 10` or <br /> `$python forecast_all.py –d nasdaq2007_17.csv -n 10`<br />
 Question B: `$python detect.py –d nasdaq2007_17.csv -n 10 -mae 0.09`<br />
-Question C: `$python reduce.py –d input_file.csv -q query_file -od out_input.csv -oq out_query.csv`<br />
+Question C: `$python reduce.py –d input_file.csv -q query_file.csv -od out_input.csv -oq out_query.csv`<br />
 
 ### Notes:
 
-We have created two variations of Question A. Inside `src/Question A` there are two files, `forecast_all.py` and `forecast.py`. 
-- `forecast_all.py` predicts using one model that was trained by using all the time series.
-- `forecast.py` predicts using multiple models. Each model was trained by using individual time series.
+1. We have created two variations of Question A. Inside `src/Question A` there are two files, `forecast_all.py` and `forecast.py`. 
+   - `forecast_all.py` predicts using one model that was trained by using all the time series.
+   - `forecast.py` predicts using multiple models. Each model was trained by using individual time series.
+
+2. For Question C we have created inside the `dir/` directory the `input_file.csv` and `query_file.csv`. 
+   - `input_file.csv` was created by taking the first 90 time series from `nasdaq2007_17.csv` file, while `query_file.csv` was created by taking the following 10.
+   - These files will be given as arguments.
