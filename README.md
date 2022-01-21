@@ -6,8 +6,8 @@ Time-Series Forecasting: Predicting Stock Prices Using An LSTM Model
 - You can find the python code for each Question inside the  `src/` directory.
 - Inside the `dir/` directory you can find the dataset .csv file (input file).
 - Inside `dir/exports/` you will find: 
- - a report.pdf file, analyzing the results for all trained models.
- - the exported plots for each question.
+  - a report.pdf file, analyzing the results for all trained models.
+  - the exported plots for each question.
 
 ### How to train your model:
 
