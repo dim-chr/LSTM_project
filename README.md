@@ -18,5 +18,5 @@ Question C: `$python reduce.py –d dir/nasdaq2007_17.csv -q <queryset> -od <out
 ### Results 
 
 Inside `dir/exports/` you will find: 
-- a result.pdf file for each question, analyzing the results with spesific arguments given.
-- the exported plots for each question. 
+- a result.pdf file for each question, analyzing the results for specific arguments.
+- the exported plots for each question.
